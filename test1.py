@@ -12,9 +12,9 @@ def run_training():
     print(sess.run(y, feed_dict={x: 1.0}))
     print(sess.run(y, feed_dict={x: 2.0}))
 
-  def main(_):
-    run_training()
+def main(_):
+  run_training()
     
-  if __name__ == '__main__':
-    tf.app.run()
+if __name__ == '__main__':
+  tf.app.run()
 
