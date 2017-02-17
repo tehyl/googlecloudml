@@ -12,22 +12,27 @@ y = tf.placeholder('float')
 
 def conv2d(x,W):
 	# strides=[1,1,1,1] refers to the 4 dimensions of the movement of the
-	# conv filter, which in this case is [batch size step, row step, column step, color step]
+	# conv filter, which in this case is [batch_size step, row step, column step, color step]
 	# see: http://stackoverflow.com/questions/34642595/tensorflow-strides-argument
 	return tf.nn.conv2d(x, W, strides=[1,1,1,1], padding='SAME')
 
-	# for ksize see: http://stackoverflow.com/questions/38601452/the-usages-of-ksize-in-tf-nn-max-pool
 def maxpool2d(x):
+	# for ksize see: http://stackoverflow.com/questions/38601452/the-usages-of-ksize-in-tf-nn-max-pool
+	# pooling over a 2x2 area, moving over 2x2 - no overlap 
 	return tf.nn.max_pool(x, ksize=[1,2,2,1], strides=[1,2,2,1], padding='SAME')	
 
 
 def convolutional_neural_network(x):
-	# [5,5,1,32] means 5x5 conv, 1 input and 32 features output???
+	# [5,5,1,32] means 5x5 conv, 1 input and 32 outputs
+	# layer 2 takes layer1 32 outputs as inputs and perform a 5x5 conv with 64 outputs
+	# layer 3 which is fully connected takes the previous 64 outputs and connects to 49 neurons with 1024 outputs
+	# final layer 4 takes 1024 inputs and outputs 10 classes
     weights = {'W_conv1':tf.Variable(tf.random_normal([5,5,1,32])),
                'W_conv2':tf.Variable(tf.random_normal([5,5,32,64])),
                'W_fc':tf.Variable(tf.random_normal([7*7*64,1024])),
                'out':tf.Variable(tf.random_normal([1024, n_classes]))}
 
+    # biases are allocated to each output for each layer
     biases = {'b_conv1':tf.Variable(tf.random_normal([32])),
                'b_conv2':tf.Variable(tf.random_normal([64])),
                'b_fc':tf.Variable(tf.random_normal([1024])),
@@ -60,7 +65,7 @@ def train_neural_network(x):
     
     hm_epochs = 10
     with tf.Session() as sess:
-        sess.run(tf.initialize_all_variables())
+        sess.run(tf.global_variables_initializer())
 
         for epoch in range(hm_epochs):
             epoch_loss = 0
